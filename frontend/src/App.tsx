@@ -2,7 +2,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { SceneEditor } from "@/components/scene-editor"
 import { SceneGallery } from "@/components/scene-gallery"
 import { CodeExplorer } from "@/components/code-explorer"
-import { ServerStatus } from "@/components/scene-editor-ui/server-status"
+import { ServerStatus } from "@/components/server-status"
 
 export default function App() {
   return (

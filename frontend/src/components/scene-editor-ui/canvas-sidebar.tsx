@@ -13,8 +13,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
+
 import { CanvasForm } from "@/components/scene-editor-ui/canvas-form"
 import { useSceneStore } from "@/store/scene-store"
+import { ExportScene } from "@/api/renderer-response"
 
 const CanvasRedactor = () => {
   const addObject = useSceneStore((state) => state.addObject)
@@ -34,6 +36,8 @@ const CanvasRedactor = () => {
 }
 
 export const CanvasSidebar = () => {
+  const exportJSON = useSceneStore((store) => store.exportJSON)
+
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
@@ -53,7 +57,8 @@ export const CanvasSidebar = () => {
           form="render-form"
           >Отрендерить
         </Button>
-        <Button variant="outline" className="w-full">
+        <Button variant="outline" className="w-full"
+          onClick={ () => ExportScene(exportJSON()) }>
           Сохранить в галлерею
         </Button>
       </CardFooter>

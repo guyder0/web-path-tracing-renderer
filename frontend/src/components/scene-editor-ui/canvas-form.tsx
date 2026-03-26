@@ -13,6 +13,9 @@ import { Input } from "@/components/ui/input"
 import { Slider } from "@/components/ui/slider"
 import { Label } from "@/components/ui/label"
 
+import { ExportScene } from "@/api/renderer-response"
+import { useSceneStore } from "@/store/scene-store"
+
 const formSchema = z.object({
   width: z
     .number()
@@ -37,13 +40,13 @@ export const CanvasForm = ({ formId }: { formId: string }) => {
       spp: 256,
     },
   })
-
-  function OnSubmit(data: z.infer<typeof formSchema>) {
-    console.log(data)
-  }
+  const exportJSON = useSceneStore((store) => store.exportJSON)
 
   return (
-    <form id={formId} className="w-full" onSubmit={form.handleSubmit(OnSubmit)}>
+    <form id={formId} className="w-full" onSubmit={
+      form.handleSubmit(
+        (data: z.infer<typeof formSchema>) => ExportScene(exportJSON())
+        )}>
       <FieldGroup>
         <div className="grid grid-cols-2 gap-4">
           <Controller

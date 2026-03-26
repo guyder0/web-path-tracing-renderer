@@ -1,15 +1,20 @@
 import { create } from 'zustand'
 import * as THREE from 'three'
+import type { MutableRefObject } from 'react'
 
 interface Store {
   objects: Array<ObjectProps>,
+  camera: MutableRefObject<THREE.PerspectiveCamera> | null,
   selectedId: number | null,
   transformMode: 'translate' | 'rotate' | 'scale',
   addObject: (type: 'cube' | 'sphere' | 'rectangle') => void,
   updateObject: (id: number, data: Partial<ObjectProps>) => void,
   deleteObject: (id: number) => void,
   selectObject: (id: number | null) => void,
+  updateCamera: (ref: MutableRefObject<THREE.PerspectiveCamera>) => void,
   setTransformMode: (mode: 'translate' | 'rotate' | 'scale') => void,
+  exportJSON: () => { objects: Array<ObjectProps>, camera: CameraProps },
+  importJSON: (json: { objects: Array<ObjectProps>, camera: CameraProps }) => void,
 }
 
 interface ObjectProps {
@@ -20,6 +25,13 @@ interface ObjectProps {
   scale: THREE.Vector3,
   color: string,
   material: 'diffuse' | 'emitter' | 'dielectric' | 'conductor',
+}
+
+interface CameraProps {
+  position: THREE.Vector3,
+  lookAt: THREE.Vector3,
+  up: THREE.Vector3,
+  fov: number,
 }
 
 export const useSceneStore = create<Store>((set, get) => ({
@@ -34,6 +46,7 @@ export const useSceneStore = create<Store>((set, get) => ({
       material: 'diffuse',
     },
   ],
+  camera: null,
   selectedId: null,
   transformMode: 'translate',
 
@@ -73,9 +86,40 @@ export const useSceneStore = create<Store>((set, get) => ({
 
   selectObject: (id: number | null) => set({ selectedId: id }),
 
+  updateCamera: (ref: MutableRefObject<THREE.PerspectiveCamera>) => set({ camera: ref }),
+
   // Переключение режима контролов
   setTransformMode: (mode: 'translate' | 'rotate' | 'scale') => set({ transformMode: mode }),
 
-  exportJSON: () => JSON.stringify(get(), null, 2),
-  importJSON: (json: string) => set(JSON.parse(json)),
+  exportJSON: () => {
+    const camera = get().camera!.current
+    let look_direction = new THREE.Vector3()
+    camera.getWorldDirection(look_direction)
+
+    return {
+      objects: get().objects,
+      camera: {
+        position: camera.position,
+        lookAt: camera.position.clone().add(look_direction),
+        up: camera.up,
+        fov: camera.fov,
+      },
+    }
+  },
+
+  importJSON: (json: { objects: Array<ObjectProps>, camera: CameraProps }) => {
+    set({ objects: json.objects })
+    get().camera!.current.position.set(
+      json.camera.position.x,
+      json.camera.position.y,
+      json.camera.position.z
+    )
+    get().camera!.current.position.set(
+      json.camera.up.x,
+      json.camera.up.y,
+      json.camera.up.z
+    )
+    get().camera!.current.lookAt(json.camera.lookAt)
+    get().camera!.current.fov = json.camera.fov
+  },
 }))

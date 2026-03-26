@@ -1,7 +1,10 @@
 import React from "react"
 import { useEffect, useState } from "react"
+import { CloudCheck, CloudOff, Loader2, RefreshCw } from "lucide-react"
+
 import { Badge } from "@/components/ui/badge"
-import { CloudCheck, CloudOff, Loader2 } from "lucide-react"
+import { CheckRenderer, CheckRepository } from "@/api/alive"
+import { Button } from "./ui/button"
 
 interface ComponentProps {
   status: 'loading' | 'online' | 'offline';
@@ -30,14 +33,13 @@ const StatusBadge: React.FC<ComponentProps> = ({ status }) => {
 }
 
 export const ServerStatus = () => {
-  const [statusRend, setStatusRend] = useState<'loading' | 'online' | 'offline'>('loading')
-  const [statusRepo, setStatusRepo] = useState<'loading' | 'online' | 'offline'>('loading')
+  const [statusRend, setStatusRend] = useState<'loading' | 'online' | 'offline'>('offline')
+  const [statusRepo, setStatusRepo] = useState<'loading' | 'online' | 'offline'>('offline')
 
   useEffect(() => {
-    const check = setInterval(() => {
-      setStatusRend(Math.random() > 0.5 ? 'online' : 'offline')
-    }, 5000)
-  }, [])
+    CheckRenderer((is_alive) => setStatusRend(is_alive ? 'online' : 'offline'))
+    CheckRepository((is_alive) => setStatusRepo(is_alive ? 'online' : 'offline'))
+  }, [statusRend, statusRepo])
 
   return (
     <div className="flex items-center gap-2 px-3 py-1 border-l ml-4">
@@ -49,6 +51,16 @@ export const ServerStatus = () => {
         Репозиторий
       </span>
       <StatusBadge status={statusRepo}/>
+
+      {
+      statusRend != 'loading' && statusRepo != 'loading' &&
+      <Button
+        onClick={() => { setStatusRend('loading'); setStatusRepo('loading'); }}
+        variant='ghost'
+      >
+          <RefreshCw />
+      </Button>
+      }
     </div>
   )
 }
