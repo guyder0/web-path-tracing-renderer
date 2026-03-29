@@ -4,12 +4,12 @@ import { TransformControls, Outlines } from '@react-three/drei'
 import * as THREE from 'three'
 
 const GEOMETRY_MAP = {
-  cube: <boxGeometry/>,
+  cube: <boxGeometry args={[2, 2, 2]}/>,
   sphere: <sphereGeometry/>,
-  rectangle: <planeGeometry/>,
+  rectangle: <planeGeometry args={[2, 2]}/>,
 }
 
-export const SceneObject = ({ id }: { id: number }) => {
+export const SceneObject = ({ id }: { id: string }) => {
   const meshRef = useRef<THREE.Mesh>(null!)
   const [isEditing, setIsEditing] = useState<boolean>(false)
 
@@ -56,6 +56,12 @@ export const SceneObject = ({ id }: { id: number }) => {
       <mesh
         ref={meshRef}
         position={data.position}
+        rotation={[
+          data.rotation.x / 180 * 3.1415,
+          data.rotation.y / 180 * 3.1415,
+          data.rotation.z / 180 * 3.1415,
+        ]}
+        scale={data.scale}
         onClick={(e) => {
           e.stopPropagation()
           selectObject(id)
@@ -65,7 +71,7 @@ export const SceneObject = ({ id }: { id: number }) => {
       >
         {/* Геометрия */}
         {GeometryComponent}
-        <meshStandardMaterial color={data.color} />
+        <meshStandardMaterial color={data.color}/>
         {data.material == "conductor" &&
           <Outlines thickness={2.5} color="#ffffff" opacity={1} />
         }

@@ -29,7 +29,7 @@ const CanvasRedactor = () => {
       <PopoverContent align="start" className="flex flex-col max-h-32 w-48 overflow-y-auto">
         <Button variant="ghost" onClick={() => addObject("cube")}>Куб</Button>
         <Button variant="ghost" onClick={() => addObject("sphere")}>Сфера</Button>
-        <Button variant="ghost" onClick={() => addObject("cube")}>Плоскость</Button>
+        <Button variant="ghost" onClick={() => addObject("rectangle")}>Плоскость</Button>
       </PopoverContent>
     </Popover>
   )

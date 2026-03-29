@@ -15,6 +15,12 @@ export const SceneEditor = () => {
           selectedId &&
           <ObjectRedactor/>
           }
+          <code className="absolute top-2 right-2 select-none">
+            <div>ЛКМ - вращение камеры</div>
+            <div>ПКМ - перемещение камеры</div>
+            <div>-/+ - изменить fov</div>
+            <div>g - вкл/выкл сетку</div>
+          </code>
         </div>
 
         <CanvasSidebar/>

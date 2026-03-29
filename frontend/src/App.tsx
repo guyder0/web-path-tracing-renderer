@@ -7,7 +7,7 @@ import { ServerStatus } from "@/components/server-status"
 export default function App() {
   return (
     <div className="h-screen bg-background text-foreground">
-      <Tabs defaultValue="editor" className="w-full h-full flex flex-col">
+      <Tabs defaultValue="editor" className="w-full h-full flex flex-col gap-0">
         <header className="border-b px-6 py-3 flex items-center justify-between">
           <TabsList variant="line" className="w-[400px] grid grid-cols-3">
             <TabsTrigger value="editor">Editor</TabsTrigger>
@@ -19,15 +19,15 @@ export default function App() {
         </header>
 
         {/* Контент страниц */}
-        <TabsContent value="editor">
+        <TabsContent value="editor" className="overflow-y-auto">
           <SceneEditor />
         </TabsContent>
 
-        <TabsContent value="gallery">
+        <TabsContent value="gallery" className="overflow-y-auto">
           <SceneGallery />
         </TabsContent>
 
-        <TabsContent value="code">
+        <TabsContent value="code" className="overflow-y-auto">
           <CodeExplorer />
         </TabsContent>
       </Tabs>

@@ -1,43 +1,19 @@
 import { create } from 'zustand'
 import * as THREE from 'three'
-import type { MutableRefObject } from 'react'
+import type { RefObject } from 'react'
 
-interface Store {
-  objects: Array<ObjectProps>,
-  camera: MutableRefObject<THREE.PerspectiveCamera> | null,
-  selectedId: number | null,
-  transformMode: 'translate' | 'rotate' | 'scale',
-  addObject: (type: 'cube' | 'sphere' | 'rectangle') => void,
-  updateObject: (id: number, data: Partial<ObjectProps>) => void,
-  deleteObject: (id: number) => void,
-  selectObject: (id: number | null) => void,
-  updateCamera: (ref: MutableRefObject<THREE.PerspectiveCamera>) => void,
-  setTransformMode: (mode: 'translate' | 'rotate' | 'scale') => void,
-  exportJSON: () => { objects: Array<ObjectProps>, camera: CameraProps },
-  importJSON: (json: { objects: Array<ObjectProps>, camera: CameraProps }) => void,
-}
+import {
+  type Store,
+  type ObjectProps,
+  type SceneJSON,
+} from '@/store/scene-store-interface'
 
-interface ObjectProps {
-  id: number,
-  type: 'cube' | 'sphere' | 'rectangle',
-  position: THREE.Vector3,
-  rotation: THREE.Vector3,
-  scale: THREE.Vector3,
-  color: string,
-  material: 'diffuse' | 'emitter' | 'dielectric' | 'conductor',
-}
-
-interface CameraProps {
-  position: THREE.Vector3,
-  lookAt: THREE.Vector3,
-  up: THREE.Vector3,
-  fov: number,
-}
+import { importSceneObject } from '@/store/scene-store-utils'
 
 export const useSceneStore = create<Store>((set, get) => ({
   objects: [
     {
-      id: 1,
+      id: "1",
       type: 'cube',
       position: new THREE.Vector3(0, 0, 0),
       rotation: new THREE.Vector3(0, 0, 0),
@@ -47,12 +23,13 @@ export const useSceneStore = create<Store>((set, get) => ({
     },
   ],
   camera: null,
+  cameraFov: 75,
   selectedId: null,
   transformMode: 'translate',
 
   // Добавление объекта
-  addObject: (type: 'cube' | 'sphere' | 'rectangle' = 'cube') => {
-    const newId = Date.now()
+  addObject: (type: ObjectProps['type'] = 'cube') => {
+    const newId = Date.now().toString()
     set((state) => ({
       objects: [
         ...state.objects,
@@ -69,7 +46,7 @@ export const useSceneStore = create<Store>((set, get) => ({
     }))
   },
 
-  updateObject: (id: number, newData: Partial<ObjectProps>) => {
+  updateObject: (id: string, newData: Partial<ObjectProps>) => {
     set((state) => ({
       objects: state.objects.map((obj: ObjectProps) =>
         obj.id === id ? { ...obj, ...newData } : obj
@@ -77,19 +54,20 @@ export const useSceneStore = create<Store>((set, get) => ({
     }))
   },
 
-  deleteObject: (id: number) => {
+  deleteObject: (id: string) => {
     set((state) => ({
       objects: state.objects.filter(obj => obj.id !== id),
       selectedId: state.selectedId === id ? null : state.selectedId,
     }))
   },
 
-  selectObject: (id: number | null) => set({ selectedId: id }),
+  selectObject: (id: string | null) => set({ selectedId: id }),
 
-  updateCamera: (ref: MutableRefObject<THREE.PerspectiveCamera>) => set({ camera: ref }),
+  selectCamera: (ref: RefObject<THREE.PerspectiveCamera>) => set({ camera: ref }),
 
-  // Переключение режима контролов
-  setTransformMode: (mode: 'translate' | 'rotate' | 'scale') => set({ transformMode: mode }),
+  setCameraFov: (fov: number) => set({ cameraFov: fov }),
+
+  setTransformMode: (mode: Store['transformMode']) => set({ transformMode: mode }),
 
   exportJSON: () => {
     const camera = get().camera!.current
@@ -98,7 +76,7 @@ export const useSceneStore = create<Store>((set, get) => ({
 
     return {
       objects: get().objects,
-      camera: {
+      sensor: {
         position: camera.position,
         lookAt: camera.position.clone().add(look_direction),
         up: camera.up,
@@ -107,19 +85,19 @@ export const useSceneStore = create<Store>((set, get) => ({
     }
   },
 
-  importJSON: (json: { objects: Array<ObjectProps>, camera: CameraProps }) => {
-    set({ objects: json.objects })
+  importJSON: ({ objects, sensor }: SceneJSON) => {
+    set({ objects: objects.map(importSceneObject) })
     get().camera!.current.position.set(
-      json.camera.position.x,
-      json.camera.position.y,
-      json.camera.position.z
+      sensor.position.x,
+      sensor.position.y,
+      sensor.position.z
     )
-    get().camera!.current.position.set(
-      json.camera.up.x,
-      json.camera.up.y,
-      json.camera.up.z
+    get().camera!.current.up.set(
+      sensor.up.x,
+      sensor.up.y,
+      sensor.up.z
     )
-    get().camera!.current.lookAt(json.camera.lookAt)
-    get().camera!.current.fov = json.camera.fov
+    get().camera!.current.lookAt(sensor.lookAt)
+    get().camera!.current.fov = sensor.fov
   },
 }))

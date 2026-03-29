@@ -18,11 +18,12 @@ import { useSceneStore } from "@/store/scene-store"
 import { ColorPicker } from "@/components/scene-editor-ui/color-picker"
 
 export const ObjectRedactor = () => {
-    let selectedId = useSceneStore((state) => state.selectedId)
-    let transformMode = useSceneStore((state) => state.transformMode)
-    let setTransformMode = useSceneStore((state) => state.setTransformMode)
-    let selectedObject = useSceneStore((state) => state.objects.find((obj) => obj.id == selectedId))
-    let updateObject = useSceneStore((state) => state.updateObject)
+    const selectedId = useSceneStore((state) => state.selectedId)
+    const transformMode = useSceneStore((state) => state.transformMode)
+    const setTransformMode = useSceneStore((state) => state.setTransformMode)
+    const selectedObject = useSceneStore((state) => state.objects.find((obj) => obj.id == selectedId))
+    const updateObject = useSceneStore((state) => state.updateObject)
+    const deleteObject = useSceneStore((state) => state.deleteObject)
 
     return (
         <Card className="absolute top-5 left-5">
@@ -74,8 +75,14 @@ export const ObjectRedactor = () => {
                         Отражающий
                     </Button>
                 </ButtonGroup>
-                <ColorPicker value={selectedObject!.color}
-                onChange={(color) => updateObject(selectedId!, {color: color})}/>
+                <div className="flex flex-row gap-4 justify-between">
+                    <ColorPicker value={selectedObject!.color}
+                    className="flex-1"
+                    onChange={(color) => updateObject(selectedId!, {color: color})}/>
+                    <Button onClick={() => deleteObject(selectedId!)}
+                    className="flex-1">
+                    Удалить </Button>
+                </div>
             </CardContent>
         </Card>
     )

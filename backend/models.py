@@ -8,7 +8,7 @@ class Vector3(BaseModel):
 
 
 class SceneObject(BaseModel):
-    id: int
+    id: str
     type: Literal["cube", "sphere", "rectangle"]
     position: Vector3
     rotation: Vector3
@@ -21,9 +21,15 @@ class SceneCamera(BaseModel):
     position: Vector3
     lookAt: Vector3
     up: Vector3
-    fov: int
+    fov: float
 
 
 class SceneParameters(BaseModel):
     objects: List[SceneObject]
-    camera: SceneCamera
+    sensor: SceneCamera
+
+
+class RenderParameters(SceneParameters):
+    spp: int
+    width: int
+    height: int
