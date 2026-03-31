@@ -2,13 +2,17 @@ import { Canvas } from "@react-three/fiber"
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei"
 import { useEffect, useRef, useState } from "react"
 import * as THREE from 'three'
+import { Perf } from 'r3f-perf'
 
 import { useSceneStore } from "@/store/scene-store"
+import { useGlContext } from "@/store/gl-contex"
 import { SceneObject } from "@/components/scene-editor-ui/canvas-object"
 import { CameraControl } from "@/components/scene-editor-ui/camera-control"
+import { SceneSnapshot } from "@/components/scene-editor-ui/scene-snapshot"
 
 export const CanvasPlayground = () => {
     let objects = useSceneStore(state => state.objects)
+
     const cameraRef = useRef<THREE.PerspectiveCamera>(null!)
     const updateCamera = useSceneStore(state => state.selectCamera)
     useEffect(() => {
@@ -23,7 +27,16 @@ export const CanvasPlayground = () => {
     })
 
     return (
-        <Canvas id="scene-canvas" onCreated={ ({ camera }) => { cameraRef.current = camera as THREE.PerspectiveCamera; } }>
+        <Canvas id="scene-canvas"
+        onCreated={ ({ camera }) => { cameraRef.current = camera as THREE.PerspectiveCamera; } }
+        gl={{ preserveDrawingBuffer: true }}
+        >
+            <SceneSnapshot />
+            <Perf
+                position="top-left"
+                className="!bottom-0 !left-0 !right-auto !top-auto !absolute"
+                showGraph={false}
+            />
             <CameraControl />
             <PerspectiveCamera
                 makeDefault

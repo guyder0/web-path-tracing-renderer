@@ -26,10 +26,10 @@ class SceneCamera(BaseModel):
 
 class SceneParameters(BaseModel):
     objects: List[SceneObject]
-    sensor: SceneCamera
 
 
 class RenderParameters(SceneParameters):
+    sensor: SceneCamera
     spp: int
     width: int
     height: int

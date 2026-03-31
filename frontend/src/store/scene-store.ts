@@ -85,19 +85,7 @@ export const useSceneStore = create<Store>((set, get) => ({
     }
   },
 
-  importJSON: ({ objects, sensor }: SceneJSON) => {
+  importJSON: ({ objects }: SceneJSON) => {
     set({ objects: objects.map(importSceneObject) })
-    get().camera!.current.position.set(
-      sensor.position.x,
-      sensor.position.y,
-      sensor.position.z
-    )
-    get().camera!.current.up.set(
-      sensor.up.x,
-      sensor.up.y,
-      sensor.up.z
-    )
-    get().camera!.current.lookAt(sensor.lookAt)
-    get().camera!.current.fov = sensor.fov
   },
 }))

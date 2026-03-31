@@ -21,30 +21,33 @@ export const InfiniteScroll = () => {
 
     // Функция загрузки данных
     const fetchItems = async (currentPage: number) => {
-        if (loading) return;
-        setLoading(true);
+        if (loading || !hasMore) return;
 
         try {
         const response = await GetScenes(currentPage);
-        const data = await response.data;
-
-        console.log(data)
+        const data: Item[] = await response.data;
 
         if (data.length === 0) {
             setHasMore(false);
         } else {
-            setItems((prev) => [...prev, ...data]);
+            setItems((prev) => {
+              const onlyNew = data.filter(newItem =>
+                !prev.some(oldItem => oldItem.hash === newItem.hash)
+              );
+              return [...prev, ...onlyNew];
+            });
         }
         } catch (error) {
-        console.error("Ошибка при загрузке данных:", error);
-        setHasMore(false)
+          console.error("Ошибка при загрузке данных:", error);
+          setHasMore(false)
         } finally {
-        setLoading(false);
+          setLoading(false)
         }
     }
 
   // Эффект для первоначальной загрузки и загрузки при смене страницы
   useEffect(() => {
+    console.log(page)
     fetchItems(page);
   }, [page]);
 
@@ -66,10 +69,6 @@ export const InfiniteScroll = () => {
     return () => observer.disconnect();
   }, [hasMore, loading]);
 
-  const handleManualLoad = () => {
-    setPage((prev) => prev + 1);
-  };
-
   return (
     <div className="container mx-auto">
       <h1 className="text-2xl font-bold my-6">Галлерея сцен</h1>
@@ -83,19 +82,14 @@ export const InfiniteScroll = () => {
       <div className="flex flex-col items-center mt-8 pb-10">
         {hasMore ? (
           <Button
-            onClick={handleManualLoad}
-            disabled={loading}
+            disabled={true}
             variant="outline"
             className="min-w-[200px]"
           >
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Загрузка...
-              </>
-            ) : (
-              "Загрузить еще"
-            )}
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Загрузка...
+            </>
           </Button>
         ) : (
           <p className="text-muted-foreground">Не удалось загрузить больше сцен</p>
