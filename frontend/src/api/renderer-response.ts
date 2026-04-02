@@ -38,7 +38,13 @@ export async function ImportScene(hash: string) {
 }
 
 export async function RenderScene(render: RenderJSON) {
-    axios.post(BACKEND_API_URL + "/render", render)
+    try {
+        const response = await axios.post(BACKEND_API_URL + '/render/', render, { timeout: 0, responseType: 'blob' });
+        const objectUrl = URL.createObjectURL(response.data);
+        return objectUrl;
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 export async function GetScenes(page: number) {

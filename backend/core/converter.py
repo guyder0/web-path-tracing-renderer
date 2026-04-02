@@ -52,13 +52,21 @@ def _convert_object(obj):
                 'value': [18.387, 13.9873, 6.75357]
             }
         }
+    elif obj['material'] == 'dielectric':
+        mi_obj['bsdf'] = {
+            "type": 'dielectric',
+            "int_ior": 'diamond',
+            "ext_ior": 'air',
+        }
+    elif obj['material'] == 'conductor':
+        mi_obj['bsdf'] = {
+            "type": 'conductor',
+            "material": 'Al',
+        }
 
     return mi_obj
 
 def _convert_sensor(sensor, width, height, spp):
-    def to_list(v):
-        return [v['x'], v['y'], v['z']]
-
     mi_sensor = {
         "type": "perspective",
         "fov": sensor['fov'],

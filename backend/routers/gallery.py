@@ -17,11 +17,11 @@ async def save_scene(
     scene_hash = hashlib.sha256(scene.encode('utf-8')).hexdigest().upper()
     os.makedirs(f"scenes/{scene_hash}", exist_ok=True)
 
-    with open(f"scenes/{scene_hash}/image.png", "wb+") as f:
+    with open(f"scenes/{scene_hash}/image.png", "wb") as f:
         imgb = await image.read()
         print(len(imgb))
         f.write(imgb)
-    with open(f"scenes/{scene_hash}/{name}.json", "w+") as f:
+    with open(f"scenes/{scene_hash}/{name}.json", "w") as f:
         scene = json.dumps(json.loads(scene), indent=4, ensure_ascii=False)
         f.write(scene)
 
@@ -30,7 +30,7 @@ async def save_scene(
 @router.get("/load/{file_hash}/")
 async def load_scene(file_hash: str) -> SceneParameters:
     spath = Path('scenes/' + file_hash)
-    sfile = list(spath.glob('*.json'))[0]
+    sfile = next(spath.glob('*.json'))
     with open(sfile, "r", encoding="utf-8") as f:
         scene = json.loads(f.read())
     return scene
@@ -39,9 +39,11 @@ async def load_scene(file_hash: str) -> SceneParameters:
 @router.get("/list/")
 async def get_list(start: int = 0, end: int = -1):
     result = []
-    spath = Path('/home/guyder/web-path-tracing-renderer/backend/scenes')
+    spath = Path('scenes/')
 
     for shash in spath.iterdir():
+        if not shash.is_dir(): # заигнорить .gitignore и мб другие вспомогательные папки
+            continue
         sname = list(shash.glob('*.json'))[0]
         result.append({
             'hash': shash.name,

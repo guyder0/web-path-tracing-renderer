@@ -5,7 +5,6 @@ import * as THREE from 'three'
 import { Perf } from 'r3f-perf'
 
 import { useSceneStore } from "@/store/scene-store"
-import { useGlContext } from "@/store/gl-contex"
 import { SceneObject } from "@/components/scene-editor-ui/canvas-object"
 import { CameraControl } from "@/components/scene-editor-ui/camera-control"
 import { SceneSnapshot } from "@/components/scene-editor-ui/scene-snapshot"
@@ -17,14 +16,18 @@ export const CanvasPlayground = () => {
     const updateCamera = useSceneStore(state => state.selectCamera)
     useEffect(() => {
         updateCamera(cameraRef)
+
+        const handleKey = (e: KeyboardEvent) => {
+            if (e.key === 'g') setNeedGrid(!needGrid)
+        }
+        window.addEventListener('keydown', handleKey)
+
+        return () => window.removeEventListener('keydown', handleKey)
     }, [])
 
     const cameraFov = useSceneStore(store => store.cameraFov)
 
     const [needGrid, setNeedGrid] = useState<boolean>(true)
-    window.addEventListener('keydown', (e: KeyboardEvent) => {
-        if (e.key === 'g') setNeedGrid(!needGrid)
-    })
 
     return (
         <Canvas id="scene-canvas"

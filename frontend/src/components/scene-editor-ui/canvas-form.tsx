@@ -13,26 +13,27 @@ import { Input } from "@/components/ui/input"
 import { Slider } from "@/components/ui/slider"
 import { Label } from "@/components/ui/label"
 
-import { ExportScene } from "@/api/renderer-response"
+import { RenderScene } from "@/api/renderer-response"
 import { useSceneStore } from "@/store/scene-store"
+import { useRenderDisplay } from "@/store/render-display-store"
 
 const formSchema = z.object({
-  width: z
+  width: z.coerce
     .number()
     .min(256, "Ширина экрана не менее 256 (144p).")
     .max(3840, "Ширина экрана не более 3840 (4K)."),
-  height: z
+  height: z.coerce
     .number()
     .min(144, "Высота экрана не менее 144 (144p).")
     .max(2160, "Высота экрана не более 2160 (4K)."),
-  spp: z
+  spp: z.coerce
     .number()
     .min(64)
     .max(512),
 })
 
 export const CanvasForm = ({ formId }: { formId: string }) => {
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<z.input<typeof formSchema>, any, z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       width: 1920,
@@ -41,11 +42,16 @@ export const CanvasForm = ({ formId }: { formId: string }) => {
     },
   })
   const exportJSON = useSceneStore((store) => store.exportJSON)
+  const { setImageUrl } = useRenderDisplay()
 
   return (
     <form id={formId} className="w-full" onSubmit={
       form.handleSubmit(
-        (data: z.infer<typeof formSchema>) => ExportScene(exportJSON())
+        async (data: z.infer<typeof formSchema>) => {
+          const scene = exportJSON()
+          const imageUrl = await RenderScene({...scene, ...data})
+          setImageUrl(imageUrl)
+        }
         )}>
       <FieldGroup>
         <div className="grid grid-cols-2 gap-4">

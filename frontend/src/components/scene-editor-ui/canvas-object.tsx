@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { useSceneStore } from '@/store/scene-store'
 import { TransformControls, Outlines } from '@react-three/drei'
 import * as THREE from 'three'
+import { MathUtils } from 'three'
 
 const GEOMETRY_MAP = {
   cube: <boxGeometry args={[2, 2, 2]}/>,
@@ -32,9 +33,9 @@ export const SceneObject = ({ id }: { id: string }) => {
           meshRef.current.position.z,
         ),
         rotation: new THREE.Vector3(
-          meshRef.current.rotation.x,
-          meshRef.current.rotation.y,
-          meshRef.current.rotation.z,
+          MathUtils.radToDeg(meshRef.current.rotation.x),
+          MathUtils.radToDeg(meshRef.current.rotation.y),
+          MathUtils.radToDeg(meshRef.current.rotation.z),
         ),
         scale: new THREE.Vector3(
           meshRef.current.scale.x,
@@ -57,9 +58,9 @@ export const SceneObject = ({ id }: { id: string }) => {
         ref={meshRef}
         position={data.position}
         rotation={[
-          data.rotation.x / 180 * 3.1415,
-          data.rotation.y / 180 * 3.1415,
-          data.rotation.z / 180 * 3.1415,
+          MathUtils.degToRad(data.rotation.x),
+          MathUtils.degToRad(data.rotation.y),
+          MathUtils.degToRad(data.rotation.z),
         ]}
         scale={data.scale}
         onClick={(e) => {
