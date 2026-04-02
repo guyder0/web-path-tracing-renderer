@@ -7,7 +7,7 @@ interface RenderDislayStore {
     setImageUrl: (url: string | undefined) => void,
 }
 
-export const useRenderDisplay = create<RenderDislayStore>((set, get) => ({
+export const useRenderDisplay = create<RenderDislayStore>((set) => ({
     isLoading: false,
     setIsLoading: (loading: boolean) => set({isLoading: loading}),
     imageUrl: undefined,

@@ -63,3 +63,9 @@ export async function GetScenes(page: number) {
         }
     )
 }
+
+export function ConstructImageUrl(hash: string) {
+    const backendApiUrl = useApiStore.getState().backendApiUrl
+
+    return backendApiUrl + "/gallery/image/" + hash + "/"
+}

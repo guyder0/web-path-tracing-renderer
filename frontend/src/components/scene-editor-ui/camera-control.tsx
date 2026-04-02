@@ -21,7 +21,7 @@ export const CameraControl = () => {
     return () => { window.removeEventListener('keydown', down); window.removeEventListener('keyup', up) }
   }, [])
 
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     if (keys.plus) setCameraFov(cameraFov + 20 * delta) // Плавное увеличение
     if (keys.minus) setCameraFov(cameraFov - 20 * delta) // Плавное уменьшение
   })

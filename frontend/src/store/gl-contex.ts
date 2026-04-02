@@ -5,7 +5,7 @@ interface Store {
     setTakeScreenshot: (func: () => string) => void,
 }
 
-export const useGlContext = create<Store>((set, get) => ({
+export const useGlContext = create<Store>((set) => ({
   takeScreenshot: null,
   setTakeScreenshot: (func: () => string) => set({takeScreenshot: func}),
 }))
