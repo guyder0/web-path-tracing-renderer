@@ -4,7 +4,6 @@ from fastapi.responses import Response
 from models import RenderParameters
 from core.converter import json_to_mitsuba
 from core.renderer import render_scene as mitsuba_render
-from exception import AppException
 
 router = APIRouter()
 

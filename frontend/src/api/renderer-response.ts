@@ -1,13 +1,13 @@
 import axios from "axios";
 
-import { BACKEND_API_URL } from "@/api/config";
-import { type SceneJSON, type RenderJSON } from "@/store/scene-store-interface";
+import { useApiStore } from "@/api/store-config";
+import { type SceneJSON, type RenderJSON } from "@/store/scene-interface";
 import { useSceneStore } from "@/store/scene-store";
 import { useGlContext } from "@/store/gl-contex";
 
 export async function ExportScene({objects}: SceneJSON) {
+    const backendApiUrl = useApiStore.getState().backendApiUrl
     const takeScreenshot = useGlContext.getState().takeScreenshot
-    console.log(takeScreenshot)
     const screenshotUrl = takeScreenshot!()
     const response = await fetch(screenshotUrl);
     const blob = await response.blob();
@@ -16,7 +16,7 @@ export async function ExportScene({objects}: SceneJSON) {
     data.append('scene', JSON.stringify({objects}))
     data.append('image', blob, 'scene.png')
 
-    axios.post(BACKEND_API_URL + "/gallery/save/", data, {
+    axios.post(backendApiUrl + "/gallery/save/", data, {
         headers: {
             'x-user-id': '1',
             'x-user-hashed-password': '1',
@@ -25,8 +25,10 @@ export async function ExportScene({objects}: SceneJSON) {
 }
 
 export async function ImportScene(hash: string) {
+    const backendApiUrl = useApiStore.getState().backendApiUrl
+
     try {
-        const response = await axios.get(BACKEND_API_URL + "/gallery/load/" + hash + "/")
+        const response = await axios.get(backendApiUrl + "/gallery/load/" + hash + "/")
         const data = response.data
 
         const store = useSceneStore.getState()
@@ -38,8 +40,10 @@ export async function ImportScene(hash: string) {
 }
 
 export async function RenderScene(render: RenderJSON) {
+    const backendApiUrl = useApiStore.getState().backendApiUrl
+
     try {
-        const response = await axios.post(BACKEND_API_URL + '/render/', render, { timeout: 0, responseType: 'blob' });
+        const response = await axios.post(backendApiUrl + '/render/', render, { timeout: 0, responseType: 'blob' });
         const objectUrl = URL.createObjectURL(response.data);
         return objectUrl;
     } catch (error) {
@@ -48,7 +52,9 @@ export async function RenderScene(render: RenderJSON) {
 }
 
 export async function GetScenes(page: number) {
-    return axios.get(BACKEND_API_URL + `/gallery/list/`,
+    const backendApiUrl = useApiStore.getState().backendApiUrl
+
+    return axios.get(backendApiUrl + `/gallery/list/`,
         {
             params: {
                 start: (page-1)*4,

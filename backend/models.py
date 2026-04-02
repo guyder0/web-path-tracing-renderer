@@ -1,4 +1,4 @@
-from typing import List, Literal
+from typing import List, Literal, Optional
 from pydantic import BaseModel
 
 class Vector3(BaseModel):
@@ -15,6 +15,8 @@ class SceneObject(BaseModel):
     scale: Vector3
     color: str
     material: Literal["diffuse", "emitter", "dielectric", "conductor"]
+    bsdfProps: Optional[dict] = None
+    emitterProps: Optional[dict] = None
 
 
 class SceneCamera(BaseModel):

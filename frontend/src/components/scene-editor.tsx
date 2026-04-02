@@ -1,6 +1,6 @@
 import { CanvasSidebar } from "@/components/scene-editor-ui/canvas-sidebar"
 import { CanvasPlayground } from "@/components/scene-editor-ui/canvas-playground"
-import { ObjectRedactor } from "@/components/scene-editor-ui/object-redactor"
+import { ObjectRedactor } from "@/components/scene-editor-ui/object-editor"
 
 import { useSceneStore } from "@/store/scene-store"
 import { ImageModal } from "@/components/scene-editor-ui/image-modal"
@@ -8,7 +8,7 @@ import { useRenderDisplay } from "@/store/render-display-store"
 
 export const SceneEditor = () => {
   const selectedId = useSceneStore((state) => state.selectedId)
-  const { setImageUrl, imageUrl } = useRenderDisplay()
+  const { isLoading, setImageUrl, imageUrl } = useRenderDisplay()
 
   return (
     <div className="h-full flex gap-4 p-2">
@@ -27,7 +27,7 @@ export const SceneEditor = () => {
         </div>
         <CanvasSidebar/>
 
-        {imageUrl && <ImageModal imageUrl={imageUrl} onClose={() => setImageUrl(undefined)}/>}
+        <ImageModal isLoading={isLoading} imageUrl={imageUrl} onClose={() => setImageUrl(undefined)}/>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import mitsuba as mi
+import json
 
 class Utils:
     @staticmethod
@@ -20,16 +21,9 @@ def _convert_object(obj):
     mi_obj = {
         "type": obj['type'],
         "to_world": transform,
-        "bsdf": {
-            "type": obj['material'],
-            "reflectance": {
-                "type": "rgb",
-                "value": Utils.hex_to_rgb(obj['color'])
-            }
-        }
     }
 
-    if obj['material'] == 'diffuse':
+    if obj['material'] in ['diffuse', 'emitter']:
         mi_obj['bsdf'] = {
             "type": 'diffuse',
             "reflectance": {
@@ -37,32 +31,10 @@ def _convert_object(obj):
                 "value": Utils.hex_to_rgb(obj['color'])
             }
         }
-    elif obj['material'] == 'emitter':
-        mi_obj['bsdf'] = {
-            "type": 'diffuse',
-            "reflectance": {
-                "type": "rgb",
-                "value": Utils.hex_to_rgb(obj['color'])
-            }
-        }
-        mi_obj['emitter'] = {
-            'type': 'area',
-            'radiance': {
-                'type': 'rgb',
-                'value': [18.387, 13.9873, 6.75357]
-            }
-        }
-    elif obj['material'] == 'dielectric':
-        mi_obj['bsdf'] = {
-            "type": 'dielectric',
-            "int_ior": 'diamond',
-            "ext_ior": 'air',
-        }
-    elif obj['material'] == 'conductor':
-        mi_obj['bsdf'] = {
-            "type": 'conductor',
-            "material": 'Al',
-        }
+    else:
+        mi_obj['bsdf'] = obj['bsdfProps']
+    if obj['material'] == 'emitter':
+        mi_obj['emitter'] = obj['emitterProps']
 
     return mi_obj
 
@@ -70,7 +42,7 @@ def _convert_sensor(sensor, width, height, spp):
     mi_sensor = {
         "type": "perspective",
         "fov": sensor['fov'],
-        "fov_axis": "smaller", # В Three.js FOV обычно вертикальный или по меньшей стороне
+        "fov_axis": "smaller",
         "to_world": mi.ScalarTransform4f.look_at(
             origin=Utils.cord_to_list(sensor['position']),
             target=Utils.cord_to_list(sensor['lookAt']),

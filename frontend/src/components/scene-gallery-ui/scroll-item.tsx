@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge"
 
-import { BACKEND_API_URL } from "@/api/config";
+import { BACKEND_API_URL } from "@/api/store-config";
 import { ImportScene } from "@/api/renderer-response";
 
 export const ScrollCard = ({ title, hash }: { title:string, hash:string }) => {

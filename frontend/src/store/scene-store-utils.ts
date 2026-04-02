@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { type ObjectProps } from '@/store/scene-store-interface';
+import { type ObjectProps } from '@/store/scene-interface';
 
 export const fromJSONVector = (v: { x: number; y: number; z: number }) =>
   new THREE.Vector3(v.x, v.y, v.z)

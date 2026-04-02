@@ -1,13 +1,14 @@
 import axios from 'axios'
 
-import { BACKEND_API_URL, GITHUB_API_URL } from "@/api/config";
+import { useApiStore } from "@/api/store-config";
 
 export async function CheckRenderer(
     handler: (is_alive: boolean) => void,
     timeout: number | undefined = undefined
 ) {
+    const backendApiUrl = useApiStore.getState().backendApiUrl
     try {
-        await axios.get(BACKEND_API_URL + "/health", {timeout: 5000})
+        await axios.get(backendApiUrl + "/health", {timeout: 5000})
         handler(true);
     }
     catch {
@@ -22,8 +23,9 @@ export async function CheckRepository(
     handler: (is_alive: boolean) => void,
     timeout: number | undefined = undefined
 ) {
+    const githubApiUrl = useApiStore.getState().githubApiUrl
     try {
-        await axios.get(GITHUB_API_URL, {timeout: 5000})
+        await axios.get(githubApiUrl, {timeout: 5000})
         handler(true);
     }
     catch {

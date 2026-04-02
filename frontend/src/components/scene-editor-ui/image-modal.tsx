@@ -1,12 +1,15 @@
 import { XIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Loader2 } from "lucide-react"
 
 interface ImageModalProps {
-  imageUrl: string
+  isLoading: boolean,
+  imageUrl: string | undefined,
   onClose: () => void
 }
 
-export const ImageModal = ({ imageUrl, onClose }: ImageModalProps) => {
+export const ImageModal = ({ imageUrl, onClose, isLoading }: ImageModalProps) => {
+  if (!isLoading && !imageUrl) { return null }
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Blurred backdrop overlay */}
@@ -15,7 +18,12 @@ export const ImageModal = ({ imageUrl, onClose }: ImageModalProps) => {
         onClick={onClose}
       />
 
+      {isLoading && (
+        <Loader2 className="h-12 w-12 animate-spin text-white mb-4" />
+      )}
+
       {/* Modal content */}
+      {imageUrl &&
       <div className="relative z-10 flex flex-col justify-center p-4 w-full">
         {/* Close button */}
         <Button
@@ -34,6 +42,7 @@ export const ImageModal = ({ imageUrl, onClose }: ImageModalProps) => {
           className="w-auto h-[75vh] object-contain rounded-lg shadow-2xl"
         />
       </div>
+      }
     </div>
   )
 }

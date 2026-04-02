@@ -20,15 +20,15 @@ import { useRenderDisplay } from "@/store/render-display-store"
 const formSchema = z.object({
   width: z.coerce
     .number()
-    .min(256, "Ширина экрана не менее 256 (144p).")
+    .min(100, "Ширина экрана не менее 100.")
     .max(3840, "Ширина экрана не более 3840 (4K)."),
   height: z.coerce
     .number()
-    .min(144, "Высота экрана не менее 144 (144p).")
+    .min(100, "Высота экрана не менее 100.")
     .max(2160, "Высота экрана не более 2160 (4K)."),
   spp: z.coerce
     .number()
-    .min(64)
+    .min(32)
     .max(512),
 })
 
@@ -36,20 +36,22 @@ export const CanvasForm = ({ formId }: { formId: string }) => {
   const form = useForm<z.input<typeof formSchema>, any, z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      width: 1920,
-      height: 1080,
-      spp: 256,
+      width: 100,
+      height: 100,
+      spp: 32,
     },
   })
   const exportJSON = useSceneStore((store) => store.exportJSON)
-  const { setImageUrl } = useRenderDisplay()
+  const { setImageUrl, setIsLoading } = useRenderDisplay()
 
   return (
     <form id={formId} className="w-full" onSubmit={
       form.handleSubmit(
         async (data: z.infer<typeof formSchema>) => {
           const scene = exportJSON()
+          setIsLoading(true)
           const imageUrl = await RenderScene({...scene, ...data})
+          setIsLoading(false)
           setImageUrl(imageUrl)
         }
         )}>
@@ -102,9 +104,9 @@ export const CanvasForm = ({ formId }: { formId: string }) => {
               <Label className="text-muted-foreground">{field.value}</Label>
             </FieldLabel>
             <Slider
-              min={64}
+              min={32}
               max={512}
-              step={1}
+              step={32}
               value={[field.value]}
               onValueChange={([val]: number[]) => field.onChange(val)}
               className="py-4"

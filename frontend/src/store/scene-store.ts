@@ -4,9 +4,10 @@ import type { RefObject } from 'react'
 
 import {
   type Store,
+  type ObjectTypes,
   type ObjectProps,
   type SceneJSON,
-} from '@/store/scene-store-interface'
+} from '@/store/scene-interface'
 
 import { importSceneObject } from '@/store/scene-store-utils'
 
@@ -28,7 +29,7 @@ export const useSceneStore = create<Store>((set, get) => ({
   transformMode: 'translate',
 
   // Добавление объекта
-  addObject: (type: ObjectProps['type'] = 'cube') => {
+  addObject: (type: ObjectTypes = 'cube') => {
     const newId = Date.now().toString()
     set((state) => ({
       objects: [
@@ -41,6 +42,8 @@ export const useSceneStore = create<Store>((set, get) => ({
           scale: new THREE.Vector3(1, 1, 1),
           color: '#' + Math.floor(Math.random()*16777215).toString(16),
           material: 'diffuse',
+          emitterProps: undefined,
+          bsdfProps: undefined,
         },
       ],
     }))

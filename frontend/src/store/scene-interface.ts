@@ -18,14 +18,19 @@ export interface Store {
   importJSON: (json: SceneJSON) => void,
 }
 
+export type ObjectTypes = 'cube' | 'sphere' | 'rectangle'
+export type ObjectMaterials = 'diffuse' | 'emitter' | 'dielectric' | 'conductor'
+
 export interface ObjectProps {
   id: string,
-  type: 'cube' | 'sphere' | 'rectangle',
+  type: ObjectTypes,
   position: THREE.Vector3,
   rotation: THREE.Vector3,
   scale: THREE.Vector3,
   color: string,
-  material: 'diffuse' | 'emitter' | 'dielectric' | 'conductor',
+  material: ObjectMaterials,
+  emitterProps?: object,
+  bsdfProps?: object,
 }
 
 export interface CameraProps {
